@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <string.h> 
+#include <stdlib.h> 
+
+typedef struct client {
+  unsigned int account_id;
+  char name[30];
+  int balance;
+} Client;
+
+//typedef struct client Client;
+
+int main(void) {
+
+  simple();
+  
+  Client clist[30];
+  int i = 0;
+  char buf[30];
+  char choice;
+  int bal;
+  printf("Update or Create?"); 
+  scanf("%c", &choice);
+  printf("%c \n", choice);
+  if (choice == 'u')
+    client_update();
+
+  while (scanf("%s", buf) != -1){
+    if(strcmp(buf, "end") == 0) 
+      break;
+    strcpy(clist[i].name, buf);
+    printf("Balance "); 
+    scanf ("%d", &bal);
+    clist[i].balance = bal;
+    clist[i].account_id = i;
+    i++;
+  }
+
+  if (i == 0) {
+    printf("No entries. Exiting!");
+    exit(0);
+  }
+
+  FILE *fp = fopen("clients.txt", "w");
+  FILE *fp2 = fopen("clients2.txt", "w");
+  FILE *fp3 = fopen("clients3.txt", "w");c
+
+  // Option A 
+
+  for (int x = 0; x < i; x++) {
+    fwrite(&clist[x], sizeof(clist[0]), 1, fp); 
+  }
+  
+  // Option B
+  fwrite(&clist, sizeof(clist[0])*i, 1, fp2);
+  
+  // Option C 
+  fwrite(&clist, sizeof(clist[0]), i, fp3);
+  
+  fclose(fp);
+  fclose(fp2);
+  fclose(fp3);
+
+  printf("%d Clients details saved: ", i);
+  printf("%lu bytes (%lu * %d) written!\n", sizeof(Client) * i, sizeof(struct client), i);
+
+}

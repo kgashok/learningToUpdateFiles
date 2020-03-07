@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <string.h> 
+#include <stdlib.h> 
+
+struct client {
+  int account_id;
+  char name[30];
+  int balance;
+};
+
+typedef struct client Client;
+
+int main() {
+
+  // CHANGE 0 - make the necessary change
+  FILE *fp = fopen("clients.txt", "r+");
+
+  Client centry[100];
+  int i = 0;
+  int res = fread(&centry, sizeof(struct client), 100, fp); 
+
+  for (i = 0; i < res; i++)
+    printf("%u %s %d\n", centry[i].account_id,
+    centry[i].name, 
+    centry[i].balance);
+
+  puts("File contents printed");
+  printf("%d records read\n", i);
+
+  // update code 
+  Client update;
+  puts("\nUpdate 2nd account from last");
+  puts("with balance = 10000");
+  printf("position at %lu (before seek)\n", ftell(fp));
+  // write the code to move FP using fseek
+  // to the right location
+  // CHANGE 1 
+  fseek(fp, -sizeof(update)*2, SEEK_END);
+  printf("position at %lu (after seek)\n", ftell(fp));
+  fread(&update, sizeof(update), 1, fp);
+  printf("%u %s %d\n\n", 
+    update.account_id,
+    update.name, 
+    update.balance);
+
+  // CHANGE 2 - the right value? 
+  update.balance = 10000;
+
+  // provide code to write to file
+  // CHANGE 3 - the two functions calls 
+  fseek(fp, -sizeof(update), SEEK_CUR);
+  fwrite(&update, sizeof(update), 1, fp);
+  fflush(fp);
+  
+  // verify whether it has happened correctly
+  // if not, use the unix command 
+  // cp clients.txt.bak clients.txt 
+  // and try again
+  rewind(fp);
+  res = fread(&centry, sizeof(struct client), 100, fp); 
+  for (i = 0; i < res; i++)
+    printf("%u %s %d\n", centry[i].account_id,
+    centry[i].name, 
+    centry[i].balance);
+
+
+  fclose(fp);
+  return 0;
+}
